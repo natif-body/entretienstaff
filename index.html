@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>NATIF BODY - Entretiens Individuels</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useMemo, useRef } = React;
+
+// ICONS
+const ChevronRight = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>;
+const ChevronLeft = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/></svg>;
+const UserCog = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
+const BarChart3 = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>;
+const Check = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/></svg>;
+const Home = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>;
+const FileText = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>;
+const Eye = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>;
+const Download = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>;
+const Upload = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>;
+const Trash2 = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
+const Lock = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>;
+const Target = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" strokeWidth={2}/><circle cx="12" cy="12" r="6" strokeWidth={2}/><circle cx="12" cy="12" r="2" strokeWidth={2}/></svg>;
+const History = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
+const TrendingUp = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>;
+const ArrowUp = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>;
+const ArrowDown = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>;
+const Minus = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4"/></svg>;
+const Star = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>;
+const User = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>;
+const Calendar = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>;
+const ClipboardList = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>;
+
+
+// ============================================
+// QUESTIONS DATABASE
+// ============================================
+
+const clubQuestions = [
+  { id: 'club1', theme: 'Évaluation du club', themeOrder: 1, type: 'rating_10', text: 'Comment évalues-tu la propreté générale de la salle ?', required: true, order: 1 },
+  { id: 'club2', theme: 'Évaluation du club', themeOrder: 1, type: 'rating_10', text: 'Comment évalues-tu la propreté des vestiaires et douches ?', required: true, order: 2 },
+  { id: 'club3', theme: 'Évaluation du club', themeOrder: 1, type: 'rating_10', text: "Comment évalues-tu la qualité de l'accueil ?", required: true, order: 3 },
+  { id: 'club4', theme: 'Évaluation du club', themeOrder: 1, type: 'rating_10', text: "Comment évalues-tu l'ambiance générale ?", required: true, order: 4 },
+  { id: 'club5', theme: 'Évaluation du club', themeOrder: 1, type: 'rating_10', text: "Comment évalues-tu l'état et la disponibilité du matériel ?", required: true, order: 5 },
+  { id: 'club6', theme: 'Évaluation du club', themeOrder: 1, type: 'rating_10', text: 'Le club te semble-t-il "premium" ?', required: true, order: 6 },
+  { id: 'club7', theme: 'Recommandation', themeOrder: 2, type: 'nps', text: 'Recommanderais-tu NATIF BODY à un proche ?', required: true, order: 1 },
+  { id: 'club8', theme: 'Tes retours', themeOrder: 3, type: 'text', text: 'Quelle est LA chose à améliorer en priorité ?', required: false, order: 1 },
+  { id: 'club9', theme: 'Tes retours', themeOrder: 3, type: 'text', text: 'Ce que tu apprécies le plus chez NATIF BODY ?', required: false, order: 2 },
+];
+
+const staffRHQuestions = [
+  { id: 'rh1', theme: 'Bien-être au travail', themeOrder: 20, type: 'rating_5', text: 'Comment notes-tu ta sensation de bien-être au travail ?', required: false, order: 1 },
+  { id: 'rh2', theme: 'Bien-être au travail', themeOrder: 20, type: 'text', text: 'Commentaires sur ton bien-être ce mois-ci', required: false, order: 2 },
+  { id: 'rh3', theme: 'Charge de travail', themeOrder: 21, type: 'scale3', text: 'Comment perçois-tu ta charge de travail ?', required: false, order: 1, options: ['Trop faible', 'Équilibrée', 'Trop élevée'] },
+  { id: 'rh4', theme: 'Charge de travail', themeOrder: 21, type: 'rating_10', text: 'Les priorités sont-elles claires pour toi ?', required: false, order: 2 },
+  { id: 'rh5', theme: 'Charge de travail', themeOrder: 21, type: 'rating_10', text: 'Comment évalues-tu la communication interne ?', required: false, order: 3 },
+  { id: 'rh6', theme: 'Observations terrain', themeOrder: 22, type: 'text', text: 'Besoins matériel, réparations à prévoir ?', required: false, order: 1 },
+  { id: 'rh7', theme: 'Observations terrain', themeOrder: 22, type: 'text', text: 'Retours/irritants remontés par les adhérents ?', required: false, order: 2 },
+  { id: 'rh8', theme: 'Développement', themeOrder: 23, type: 'text', text: 'Besoins en formation identifiés ?', required: false, order: 1 },
+  { id: 'rh9', theme: 'Développement', themeOrder: 23, type: 'text', text: "Souhaits d'évolution au sein de NATIF BODY ?", required: false, order: 2 },
+  { id: 'rh10', theme: 'Vision & idées', themeOrder: 24, type: 'text', text: 'Si tu étais DG 1 semaine, tu changerais quoi en premier ?', required: false, order: 1 },
+];
+
+// Compétences COACH - 100% orientées métier coach fitness
+const coachCompetences = [
+  {
+    name: 'Qualité du coaching',
+    competences: [
+      { id: 'coach_1', label: 'Préparation des séances', desc: 'Séances planifiées, adaptées au niveau et objectifs du client' },
+      { id: 'coach_2', label: 'Maîtrise technique et pédagogie', desc: 'Démonstrations claires, corrections précises, explications adaptées' },
+      { id: 'coach_3', label: 'Adaptation de l\'intensité', desc: 'Ajuste les charges, volumes et récupération selon le client' },
+      { id: 'coach_4', label: 'Motivation et énergie', desc: 'Encourage, pousse à se dépasser, transmet une énergie positive' },
+    ]
+  },
+  {
+    name: 'Suivi et relation adhérents',
+    competences: [
+      { id: 'coach_5', label: 'Écoute et adaptation', desc: 'Écoute les retours clients, comprend et adapte si besoin' },
+      { id: 'coach_6', label: 'Suivi de progression', desc: 'Mesure des résultats, ajustements, bilans réguliers' },
+      { id: 'coach_7', label: 'Fidélisation', desc: 'Crée du lien, adhérents engagés sur la durée' },
+      { id: 'coach_8', label: 'Gestion des cours collectifs', desc: 'Animation dynamique, gestion du groupe, ambiance' },
+    ]
+  },
+  {
+    name: 'Maîtrise des outils',
+    competences: [
+      { id: 'coach_9', label: 'Maîtrise de Sportigo', desc: 'Utilisation efficace de l\'app, séances et programmes à jour' },
+      { id: 'coach_10', label: 'Connaissance des formules', desc: 'Maîtrise des offres du club, capable de renseigner les adhérents' },
+      { id: 'coach_11', label: 'Communication interne', desc: 'Lit Discord, réagit aux messages, informe l\'équipe' },
+      { id: 'coach_12', label: 'Contenu et promotion', desc: 'Contenu marketing posté sur les bons canaux, services promus' },
+    ]
+  },
+  {
+    name: 'Respect des process',
+    competences: [
+      { id: 'coach_13', label: 'To-do list et consignes', desc: 'Suivi des tâches quotidiennes, entretien espace, rangement, poubelles' },
+      { id: 'coach_14', label: 'Rappels clients', desc: 'Relances faites, suivi des absences, réactivation' },
+      { id: 'coach_15', label: 'Vérification matériel', desc: 'Machines vérifiées, problèmes signalés, stocks contrôlés' },
+    ]
+  },
+  {
+    name: 'Gestion du temps et rigueur',
+    competences: [
+      { id: 'coach_16', label: 'Ponctualité', desc: 'Présent à l\'heure, prêt pour les séances' },
+      { id: 'coach_17', label: 'Gestion du temps de travail', desc: 'Évite les bavardages excessifs, reste focus sur le coaching' },
+      { id: 'coach_18', label: 'Rigueur au travail', desc: 'Sérieux, appliqué, travail bien fait jusqu\'au bout' },
+      { id: 'coach_19', label: 'Gestion du stress', desc: 'Reste calme en période d\'affluence, gère la pression' },
+    ]
+  },
+  {
+    name: 'Savoir-être et équipe',
+    competences: [
+      { id: 'coach_20', label: 'Présentation', desc: 'Tenue sportive soignée, image professionnelle' },
+      { id: 'coach_21', label: 'Focus travail', desc: 'Pas de téléphone perso, concentré sur les adhérents' },
+      { id: 'coach_22', label: 'Esprit d\'équipe', desc: 'Entraide entre collègues, bonne communication, solidarité' },
+    ]
+  },
+];
+
+// Compétences COMMERCIAL - 100% orientées vente et relation client
+const commercialCompetences = [
+  {
+    name: 'Acquisition nouveaux adhérents',
+    competences: [
+      { id: 'com_1', label: 'Accueil des prospects', desc: 'Première impression, sourire, disponibilité' },
+      { id: 'com_2', label: 'Découverte des besoins', desc: 'Questions pertinentes, écoute active' },
+      { id: 'com_3', label: 'Présentation du club', desc: 'Visite valorisante, mise en avant des atouts' },
+      { id: 'com_4', label: 'Argumentation et objections', desc: 'Réponses convaincantes, traitement des freins' },
+      { id: 'com_5', label: 'Conclusion de vente', desc: 'Closing efficace, signature' },
+    ]
+  },
+  {
+    name: 'Suivi commercial',
+    competences: [
+      { id: 'com_6', label: 'Relance des prospects', desc: 'Suivi des contacts, rappels, nurturing' },
+      { id: 'com_7', label: 'Gestion administrative', desc: 'Dossiers complets, CRM à jour' },
+      { id: 'com_8', label: 'Atteinte des objectifs', desc: 'Résultats vs objectifs fixés' },
+    ]
+  },
+  {
+    name: 'Maîtrise des outils',
+    competences: [
+      { id: 'com_9', label: 'Maîtrise de Sportigo', desc: 'Utilisation efficace de l\'app, inscriptions, gestion adhérents' },
+      { id: 'com_10', label: 'Connaissance des formules', desc: 'Maîtrise des offres, tarifs, promotions en cours' },
+      { id: 'com_11', label: 'Communication interne', desc: 'Lit Discord, réagit aux messages, informe l\'équipe' },
+      { id: 'com_12', label: 'Contenu et promotion', desc: 'Contenu marketing posté sur les bons canaux, services promus' },
+    ]
+  },
+  {
+    name: 'Respect des process',
+    competences: [
+      { id: 'com_13', label: 'To-do list et consignes', desc: 'Suivi des tâches quotidiennes, procédures respectées' },
+      { id: 'com_14', label: 'Propreté de l\'accueil', desc: 'Bureau rangé, espace accueillant, vitrine soignée' },
+      { id: 'com_15', label: 'Vérification matériel', desc: 'Stocks contrôlés, problèmes signalés' },
+    ]
+  },
+  {
+    name: 'Gestion du temps et rigueur',
+    competences: [
+      { id: 'com_16', label: 'Ponctualité', desc: 'Respect des RDV, disponibilité aux horaires d\'affluence' },
+      { id: 'com_17', label: 'Gestion du temps de travail', desc: 'Évite les bavardages excessifs, reste focus sur les objectifs' },
+      { id: 'com_18', label: 'Rigueur au travail', desc: 'Sérieux, appliqué, travail bien fait jusqu\'au bout' },
+      { id: 'com_19', label: 'Gestion du stress', desc: 'Reste calme face aux objections, gère la pression des objectifs' },
+    ]
+  },
+  {
+    name: 'Savoir-être et équipe',
+    competences: [
+      { id: 'com_20', label: 'Présentation', desc: 'Tenue soignée, image premium du club' },
+      { id: 'com_21', label: 'Attitude positive', desc: 'Sourire, énergie, enthousiasme communicatif' },
+      { id: 'com_22', label: 'Esprit d\'équipe', desc: 'Entraide entre collègues, bonne communication, solidarité' },
+    ]
+  },
+];
+
+// Compétences MANAGER - 100% orientées gestion et leadership
+const managerCompetences = [
+  {
+    name: 'Management d\'équipe',
+    competences: [
+      { id: 'mgr_1', label: 'Leadership', desc: 'Donne la direction, inspire, motive l\'équipe' },
+      { id: 'mgr_2', label: 'Gestion des plannings', desc: 'Organisation des horaires, remplacements' },
+      { id: 'mgr_3', label: 'Développement des équipes', desc: 'Formation, montée en compétences, feedback' },
+      { id: 'mgr_4', label: 'Gestion des conflits', desc: 'Médiation, résolution des tensions' },
+    ]
+  },
+  {
+    name: 'Pilotage du club',
+    competences: [
+      { id: 'mgr_5', label: 'Suivi des indicateurs', desc: 'CA, inscriptions, fréquentation, NPS' },
+      { id: 'mgr_6', label: 'Gestion des coûts', desc: 'Maîtrise du budget, achats' },
+      { id: 'mgr_7', label: 'Qualité de service', desc: 'Standards, contrôle, satisfaction adhérents' },
+      { id: 'mgr_8', label: 'Prise de décision', desc: 'Réactivité, pertinence, autonomie' },
+    ]
+  },
+  {
+    name: 'Maîtrise des outils',
+    competences: [
+      { id: 'mgr_9', label: 'Maîtrise de Sportigo', desc: 'Utilisation complète, reporting, suivi des données' },
+      { id: 'mgr_10', label: 'Connaissance des formules', desc: 'Maîtrise totale des offres pour accompagner l\'équipe' },
+      { id: 'mgr_11', label: 'Communication interne', desc: 'Anime Discord, diffuse les infos, s\'assure que l\'équipe suit' },
+      { id: 'mgr_12', label: 'Contenu et promotion', desc: 'Valide le contenu marketing, pilote la stratégie de com' },
+    ]
+  },
+  {
+    name: 'Respect des process',
+    competences: [
+      { id: 'mgr_13', label: 'Suivi des process équipe', desc: 'Vérifie que les to-do sont faites, contrôle qualité' },
+      { id: 'mgr_14', label: 'Organisation générale', desc: 'Club bien tenu, espaces propres, matériel en ordre' },
+      { id: 'mgr_15', label: 'Anticipation', desc: 'Stocks gérés, maintenance planifiée, problèmes anticipés' },
+    ]
+  },
+  {
+    name: 'Gestion du temps et rigueur',
+    competences: [
+      { id: 'mgr_16', label: 'Exemplarité horaires', desc: 'Premier arrivé, montre l\'exemple sur la ponctualité' },
+      { id: 'mgr_17', label: 'Priorisation', desc: 'Gère son temps efficacement, distingue urgent et important' },
+      { id: 'mgr_18', label: 'Rigueur au travail', desc: 'Exigeant avec soi-même, travail bien fait' },
+      { id: 'mgr_19', label: 'Gestion du stress', desc: 'Reste calme en situation de crise, prend du recul' },
+    ]
+  },
+  {
+    name: 'Savoir-être et équipe',
+    competences: [
+      { id: 'mgr_20', label: 'Disponibilité', desc: 'Accessible pour l\'équipe et les adhérents' },
+      { id: 'mgr_21', label: 'Vision globale', desc: 'Voit l\'ensemble, anticipe les problèmes' },
+      { id: 'mgr_22', label: 'Esprit d\'équipe', desc: 'Crée la cohésion, favorise l\'entraide, fédère' },
+    ]
+  },
+];
+
+// Fonction pour obtenir les compétences selon le rôle (PAS de compétences communes, tout est spécifique)
+const getCompetencesForRole = (role) => {
+  if (role === 'coach') return coachCompetences;
+  if (role === 'commercial') return commercialCompetences;
+  return managerCompetences;
+};
+
+// Tous les IDs pour la démo
+const allCompetenceIds = [
+  ...coachCompetences.flatMap(cat => cat.competences.map(c => c.id)),
+  ...commercialCompetences.flatMap(cat => cat.competences.map(c => c.id)),
+  ...managerCompetences.flatMap(cat => cat.competences.map(c => c.id)),
+];
+
+// ============================================
+// DEMO DATA
+// ============================================
+
+const generateDemoData = () => {
+  const staffData = [
+    { name: 'Marie Dupont', role: 'coach' },
+    { name: 'Lucas Martin', role: 'commercial' },
+    { name: 'Sophie Bernard', role: 'manager' }
+  ];
+  const months = ['01/11/2024', '01/12/2024', '01/01/2025'];
+  
+  const responses = [];
+  
+  // Staff responses
+  staffData.forEach(({ name, role }, ni) => {
+    const roleCompetences = getCompetencesForRole(role);
+    const compIds = roleCompetences.flatMap(cat => cat.competences.map(c => c.id));
+    
+    months.forEach((date, mi) => {
+      const compSelf = {};
+      const compManager = {};
+      const compComments = {};
+      compIds.forEach(id => {
+        compSelf[id] = Math.min(5, Math.max(1, 2 + mi + Math.floor(Math.random() * 2)));
+        compManager[id] = Math.min(5, Math.max(1, 2 + mi + Math.floor(Math.random() * 2)));
+        if (Math.random() > 0.7) compComments[id] = 'Bonne progression';
+      });
+      responses.push({
+        id: Date.now() + ni * 100 + mi,
+        type: 'staff',
+        name,
+        role,
+        manager: 'Thomas',
+        date,
+        answers: {
+          obj1: `Objectif court terme ${mi + 1}`,
+          obj2: `Objectif moyen terme ${mi + 1}`,
+          obj3: `Objectif long terme`,
+          rh1: 3 + Math.floor(Math.random() * 2),
+        },
+        competencesSelf: compSelf,
+        competencesManager: compManager,
+        competencesComments: compComments,
+      });
+    });
+  });
+
+  return responses;
+};
+
+// ============================================
+// COMPONENTS
+// ============================================
+
+const Logo = ({ size = 'md' }) => {
+  const sizes = { sm: 'w-10 h-10 text-sm', md: 'w-16 h-16 text-xl', lg: 'w-24 h-24 text-3xl' };
+  return (
+    <div className={`${sizes[size]} bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center shadow-xl border-2 border-red-500`}>
+      <span className="text-white font-bold">NB</span>
+    </div>
+  );
+};
+
+const TrendIndicator = ({ current, previous }) => {
+  if (previous === undefined || previous === null) return null;
+  const diff = current - previous;
+  if (diff > 0) return <span className="flex items-center text-emerald-500 text-xs"><ArrowUp className="w-3 h-3" />+{diff.toFixed(1)}</span>;
+  if (diff < 0) return <span className="flex items-center text-red-500 text-xs"><ArrowDown className="w-3 h-3" />{diff.toFixed(1)}</span>;
+  return <span className="flex items-center text-gray-500 text-xs"><Minus className="w-3 h-3" />0</span>;
+};
+
+const ProgressBar = ({ value, max = 10, color = 'red' }) => {
+  const percent = (value / max) * 100;
+  const colors = {
+    red: 'bg-red-600',
+    emerald: 'bg-emerald-500',
+    amber: 'bg-amber-500',
+  };
+  return (
+    <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+      <div className={`h-full ${colors[color]} rounded-full transition-all`} style={{ width: `${percent}%` }} />
+    </div>
+  );
+};
+
+const Rating10 = ({ value, onChange }) => (
+  <div className="flex flex-wrap gap-2">
+    {[1,2,3,4,5,6,7,8,9,10].map(n => (
+      <button key={n} onClick={() => onChange(n)}
+        className={`w-9 h-9 rounded-lg font-semibold text-sm transition-all ${
+          value === n ? n >= 8 ? 'bg-emerald-500 text-white' : n >= 6 ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'
+          : 'bg-neutral-800 hover:bg-neutral-700 text-gray-300 border border-neutral-700'}`}>
+        {n}
+      </button>
+    ))}
+  </div>
+);
+
+const Rating5 = ({ value, onChange, compact = false }) => {
+  const labels = ['Non acquis', 'En cours', 'Acquis', 'Maîtrisé', 'Expert'];
+  if (compact) {
+    return (
+      <div className="flex gap-1">
+        {[1,2,3,4,5].map(n => (
+          <button key={n} onClick={() => onChange(n)}
+            className={`w-8 h-8 rounded text-xs font-medium transition-all ${
+              value === n ? 'bg-red-600 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-gray-300 border border-neutral-700'}`}>
+            {n}
+          </button>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="flex flex-wrap gap-2">
+      {[1,2,3,4,5].map(n => (
+        <button key={n} onClick={() => onChange(n)}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+            value === n ? 'bg-red-600 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-gray-300 border border-neutral-700'}`}>
+          {n} - {labels[n-1]}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+const NPS = ({ value, onChange }) => (
+  <div className="space-y-2">
+    <div className="flex flex-wrap gap-1.5">
+      {[0,1,2,3,4,5,6,7,8,9,10].map(n => (
+        <button key={n} onClick={() => onChange(n)}
+          className={`w-9 h-9 rounded-lg font-semibold text-sm transition-all ${
+            value === n ? n >= 9 ? 'bg-emerald-500 text-white' : n >= 7 ? 'bg-amber-500 text-white' : 'bg-red-500 text-white'
+            : 'bg-neutral-800 hover:bg-neutral-700 text-gray-300 border border-neutral-700'}`}>
+          {n}
+        </button>
+      ))}
+    </div>
+    <div className="flex justify-between text-xs text-gray-500 px-1">
+      <span>Pas du tout</span>
+      <span>Absolument</span>
+    </div>
+  </div>
+);
+
+const RadioOptions = ({ options, value, onChange }) => (
+  <div className="space-y-2">
+    {options.map(opt => (
+      <button key={opt} onClick={() => onChange(opt)}
+        className={`w-full p-3 rounded-lg text-left transition-all ${
+          value === opt ? 'bg-red-600 border-2 border-red-500 text-white' : 'bg-neutral-800 border-2 border-neutral-700 hover:border-red-600 text-gray-300'}`}>
+        {opt}
+      </button>
+    ))}
+  </div>
+);
+
+const Scale3 = ({ options, value, onChange }) => (
+  <div className="flex gap-2">
+    {options.map((opt) => (
+      <button key={opt} onClick={() => onChange(opt)}
+        className={`flex-1 p-3 rounded-lg text-center text-sm font-medium transition-all ${
+          value === opt ? 'bg-red-600 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-gray-300 border border-neutral-700'}`}>
+        {opt}
+      </button>
+    ))}
+  </div>
+);
+
+const TextInput = ({ value, onChange, placeholder }) => (
+  <textarea value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder || "Ta réponse..."} rows={3}
+    className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-200 placeholder-gray-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none resize-none" />
+);
+
+const QuestionCard = ({ question, value, onChange, showRequired = false, comment, onCommentChange }) => {
+  const hasComment = ['rating_10', 'rating_5', 'nps'].includes(question.type);
+  
+  const renderInput = () => {
+    switch (question.type) {
+      case 'rating_10': return <Rating10 value={value} onChange={onChange} />;
+      case 'rating_5': return <Rating5 value={value} onChange={onChange} />;
+      case 'nps': return <NPS value={value} onChange={onChange} />;
+      case 'radio': return <RadioOptions options={question.options} value={value} onChange={onChange} />;
+      case 'scale3': return <Scale3 options={question.options} value={value} onChange={onChange} />;
+      case 'text': return <TextInput value={value} onChange={onChange} />;
+      default: return null;
+    }
+  };
+  return (
+    <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-5">
+      <p className="font-medium text-gray-200 mb-4">
+        {question.text}
+        {showRequired && question.required && <span className="text-red-500 ml-1">*</span>}
+      </p>
+      {renderInput()}
+      {hasComment && onCommentChange && (
+        <div className="mt-3 pt-3 border-t border-neutral-800">
+          <input
+            type="text"
+            value={comment || ''}
+            onChange={e => onCommentChange(e.target.value)}
+            placeholder="Ajouter un commentaire (optionnel)"
+            className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-300 text-sm placeholder-gray-500 focus:border-red-500 outline-none"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// PAGES
+// ============================================
+
+const HomePage = ({ onSelect }) => {
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showAdminPasswordModal, setShowAdminPasswordModal] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [modalType, setModalType] = useState(null); // 'staff' ou 'admin'
+
+  const handleAccess = () => {
+    if (password === '0918') {
+      setShowPasswordModal(false);
+      setShowAdminPasswordModal(false);
+      setPassword('');
+      setPasswordError(false);
+      onSelect(modalType);
+    } else {
+      setPasswordError(true);
+    }
+  };
+
+  const openModal = (type) => {
+    setModalType(type);
+    setPassword('');
+    setPasswordError(false);
+    if (type === 'staff') setShowPasswordModal(true);
+    else setShowAdminPasswordModal(true);
+  };
+
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
+      <Logo size="lg" />
+      <h1 className="text-3xl font-bold text-white mt-6 mb-1">NATIF BODY</h1>
+      <p className="text-red-500 font-medium mb-10">Entretiens Individuels</p>
+      
+      <div className="w-full max-w-md space-y-4">
+        <button onClick={() => openModal('staff')}
+          className="w-full bg-gradient-to-r from-neutral-900 to-neutral-800 rounded-2xl p-6 flex items-center gap-4 hover:from-neutral-800 hover:to-neutral-700 transition-all group border border-neutral-700 hover:border-red-600">
+          <div className="p-4 bg-gradient-to-br from-red-600 to-red-800 rounded-xl shadow-lg">
+            <UserCog className="w-7 h-7 text-white" />
+          </div>
+          <div className="flex-1 text-left">
+            <h2 className="font-bold text-white text-lg">Démarrer un entretien</h2>
+            <p className="text-sm text-gray-400">Évaluation et objectifs collaborateur</p>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="px-2 py-1 bg-red-900/50 text-red-400 text-xs rounded-full border border-red-800">🎯 Compétences + Objectifs</span>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-red-500 transition-colors" />
+        </button>
+
+        <div className="pt-6 flex justify-center">
+          <button onClick={() => openModal('admin')} className="text-sm text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" /> Tableau de bord
+          </button>
+        </div>
+      </div>
+
+      {/* Modal mot de passe - Entretien */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-50">
+          <div className="bg-neutral-900 rounded-2xl p-6 w-full max-w-sm border border-neutral-800">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-800">
+                <UserCog className="w-7 h-7 text-red-500" />
+              </div>
+              <h2 className="text-xl font-bold text-white">Entretien Individuel</h2>
+              <p className="text-sm text-gray-400 mt-1">Entrez le code d'accès</p>
+            </div>
+            
+            <input
+              type="password"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setPasswordError(false); }}
+              onKeyDown={e => e.key === 'Enter' && handleAccess()}
+              placeholder="Code d'accès"
+              className={`w-full p-4 bg-neutral-800 border ${passwordError ? 'border-red-500' : 'border-neutral-700'} rounded-xl text-white text-center text-lg tracking-widest placeholder-gray-500 focus:border-red-500 outline-none mb-2`}
+              autoFocus
+            />
+            {passwordError && (
+              <p className="text-red-500 text-sm text-center mb-4">Code incorrect</p>
+            )}
+            
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => { setShowPasswordModal(false); setPassword(''); setPasswordError(false); }}
+                className="flex-1 py-3 border border-neutral-700 text-gray-300 rounded-xl font-medium hover:bg-neutral-800">
+                Annuler
+              </button>
+              <button onClick={handleAccess}
+                className="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700">
+                Valider
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal mot de passe - Tableau de bord */}
+      {showAdminPasswordModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-50">
+          <div className="bg-neutral-900 rounded-2xl p-6 w-full max-w-sm border border-neutral-800">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-800">
+                <BarChart3 className="w-7 h-7 text-red-500" />
+              </div>
+              <h2 className="text-xl font-bold text-white">Tableau de bord</h2>
+              <p className="text-sm text-gray-400 mt-1">Entrez le code d'accès</p>
+            </div>
+            
+            <input
+              type="password"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setPasswordError(false); }}
+              onKeyDown={e => e.key === 'Enter' && handleAccess()}
+              placeholder="Code d'accès"
+              className={`w-full p-4 bg-neutral-800 border ${passwordError ? 'border-red-500' : 'border-neutral-700'} rounded-xl text-white text-center text-lg tracking-widest placeholder-gray-500 focus:border-red-500 outline-none mb-2`}
+              autoFocus
+            />
+            {passwordError && (
+              <p className="text-red-500 text-sm text-center mb-4">Code incorrect</p>
+            )}
+            
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => { setShowAdminPasswordModal(false); setPassword(''); setPasswordError(false); }}
+                className="flex-1 py-3 border border-neutral-700 text-gray-300 rounded-xl font-medium hover:bg-neutral-800">
+                Annuler
+              </button>
+              <button onClick={handleAccess}
+                className="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700">
+                Valider
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ENTRETIEN INDIVIDUEL
+const StaffSurvey = ({ onBack, onComplete, responses, setResponses, history }) => {
+  const [mode, setMode] = useState(null);
+  const [step, setStep] = useState(0);
+  const [staffName, setStaffName] = useState('');
+  const [managerName, setManagerName] = useState('');
+  const [staffRole, setStaffRole] = useState(null); // 'coach', 'commercial', 'manager'
+  const [answers, setAnswers] = useState({});
+  const [comments, setComments] = useState({});
+  const [competencesSelf, setCompetencesSelf] = useState({});
+  const [competencesManager, setCompetencesManager] = useState({});
+  const [competencesComments, setCompetencesComments] = useState({});
+
+  const previousObjectives = useMemo(() => {
+    const lastEntry = history.filter(h => h.type === 'staff' && h.name === staffName).slice(-1)[0];
+    return lastEntry?.answers || {};
+  }, [staffName, history]);
+
+  const clubSteps = useMemo(() => {
+    const grouped = {};
+    clubQuestions.forEach(q => {
+      if (!grouped[q.theme]) grouped[q.theme] = { theme: q.theme, order: q.themeOrder, questions: [], section: 'club' };
+      grouped[q.theme].questions.push(q);
+    });
+    return Object.values(grouped).sort((a, b) => a.order - b.order);
+  }, []);
+
+  const rhSteps = useMemo(() => {
+    const grouped = {};
+    staffRHQuestions.forEach(q => {
+      if (!grouped[q.theme]) grouped[q.theme] = { theme: q.theme, order: q.themeOrder, questions: [], section: 'rh' };
+      grouped[q.theme].questions.push(q);
+    });
+    return Object.values(grouped).sort((a, b) => a.order - b.order);
+  }, []);
+
+  const allSteps = [
+    { theme: 'Bilan objectifs précédents', section: 'objectives_review', questions: [] },
+    ...clubSteps,
+    { theme: 'Poste du collaborateur', section: 'role_select', questions: [] },
+    { theme: 'Auto-évaluation des compétences', section: 'competences', questions: [] },
+    { theme: 'Nouveaux objectifs', section: 'objectives', questions: [
+      { id: 'obj1', type: 'text', text: 'Objectifs à court terme (ce mois)', required: false },
+      { id: 'obj2', type: 'text', text: 'Objectifs à moyen terme (6 mois)', required: false },
+      { id: 'obj3', type: 'text', text: 'Objectifs à long terme (24 mois et +)', required: false },
+    ]},
+    ...rhSteps,
+  ];
+
+  // Compétences selon le rôle sélectionné
+  const currentCompetenceCategories = useMemo(() => {
+    if (!staffRole) return [];
+    return getCompetencesForRole(staffRole);
+  }, [staffRole]);
+
+  const totalSteps = allSteps.length;
+  const currentStep = allSteps[step - 1];
+  const progress = step === 0 ? 0 : (step / totalSteps) * 100;
+
+  const validateStep = () => {
+    if (step === 0) return staffName.trim().length > 0 && managerName.trim().length > 0;
+    if (currentStep?.section === 'role_select') return staffRole !== null;
+    // Toutes les autres étapes sont optionnelles
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const response = {
+      id: Date.now(), type: 'staff', name: staffName, manager: managerName,
+      role: staffRole,
+      date: new Date().toLocaleDateString('fr-FR'), answers, comments, competencesSelf,
+      competencesManager, 
+      competencesComments,
+      nps: answers['club7'],
+    };
+    setResponses([...responses, response]);
+    onComplete(response, staffName, staffRole);
+  };
+
+  if (!mode) {
+    return (
+      <div className="min-h-screen bg-black">
+        <header className="p-4 flex items-center gap-3 border-b border-neutral-800">
+          <button onClick={onBack} className="p-2 hover:bg-neutral-800 rounded-lg text-gray-400"><ChevronLeft className="w-5 h-5" /></button>
+          <Logo size="sm" />
+          <span className="font-semibold text-white">NATIF BODY</span>
+        </header>
+        <main className="max-w-lg mx-auto p-6 text-center">
+          <div className="w-16 h-16 bg-red-900/50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-800">
+            <FileText className="w-8 h-8 text-red-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Entretien individuel</h1>
+          <p className="text-gray-400 mb-8">Évaluation mensuelle collaborateur avec le manager</p>
+          <button onClick={() => setMode('manager')} className="w-full py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
+            Commencer l'entretien <ChevronRight className="w-5 h-5" />
+          </button>
+        </main>
+      </div>
+    );
+  }
+
+  if (step === 0) {
+    return (
+      <div className="min-h-screen bg-black">
+        <header className="p-4 flex items-center gap-3 border-b border-neutral-800">
+          <button onClick={() => setMode(null)} className="p-2 hover:bg-neutral-800 rounded-lg text-gray-400"><ChevronLeft className="w-5 h-5" /></button>
+          <Logo size="sm" />
+        </header>
+        <main className="max-w-lg mx-auto p-6">
+          <div className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 mb-6 space-y-4">
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">Nom du collaborateur</label>
+              <input type="text" value={staffName} onChange={e => setStaffName(e.target.value)} placeholder="Ex: Marie Dupont"
+                className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500 focus:border-red-500 outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-300 mb-2">Nom du manager</label>
+              <input type="text" value={managerName} onChange={e => setManagerName(e.target.value)} placeholder="Ex: Thomas"
+                className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-gray-500 focus:border-red-500 outline-none" />
+            </div>
+          </div>
+          <button onClick={() => setStep(1)} disabled={!validateStep()}
+            className="w-full py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2">
+            Démarrer <ChevronRight className="w-5 h-5" />
+          </button>
+        </main>
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    if (currentStep?.section === 'objectives_review') {
+      const hasPreviousObjectives = previousObjectives['obj1'] || previousObjectives['obj2'] || previousObjectives['obj3'];
+      
+      if (!hasPreviousObjectives) {
+        // Premier entretien - pas d'objectifs à évaluer
+        return (
+          <div className="space-y-4">
+            <div className="bg-neutral-800 rounded-xl p-6 text-center">
+              <div className="w-14 h-14 bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-800">
+                <Target className="w-7 h-7 text-red-500" />
+              </div>
+              <h3 className="font-medium text-white mb-2">Premier entretien de {staffName}</h3>
+              <p className="text-sm text-gray-400 mb-4">
+                Aucun objectif n'a encore été défini.
+              </p>
+              <div className="bg-neutral-900 rounded-lg p-4 text-left">
+                <p className="text-xs text-gray-500 mb-2">📋 Déroulement de l'entretien :</p>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>1. Évaluation du club</li>
+                  <li>2. Auto-évaluation des compétences</li>
+                  <li>3. <span className="text-red-400 font-medium">Définition des 3 objectifs</span> (court, moyen, long terme)</li>
+                  <li>4. Questions RH</li>
+                </ul>
+                <p className="text-xs text-gray-500 mt-3">
+                  → Lors du prochain entretien, tu pourras faire le bilan de ces objectifs.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      // Entretiens suivants - bilan des objectifs précédents
+      return (
+        <div className="space-y-4">
+          <div className="bg-red-900/30 rounded-xl p-4 border border-red-900">
+            <h3 className="font-medium text-red-400 mb-3 flex items-center gap-2"><Target className="w-5 h-5" /> Objectifs fixés lors du dernier entretien</h3>
+            <div className="space-y-2 text-sm text-gray-300">
+              {previousObjectives['obj1'] && (
+                <div className="p-3 bg-neutral-800/50 rounded-lg">
+                  <span className="text-red-400 text-xs">Court terme (ce mois)</span>
+                  <p>{previousObjectives['obj1']}</p>
+                </div>
+              )}
+              {previousObjectives['obj2'] && (
+                <div className="p-3 bg-neutral-800/50 rounded-lg">
+                  <span className="text-red-400 text-xs">Moyen terme (6 mois)</span>
+                  <p>{previousObjectives['obj2']}</p>
+                </div>
+              )}
+              {previousObjectives['obj3'] && (
+                <div className="p-3 bg-neutral-800/50 rounded-lg">
+                  <span className="text-red-400 text-xs">Long terme (24 mois+)</span>
+                  <p>{previousObjectives['obj3']}</p>
+                </div>
+              )}
+            </div>
+          </div>
+          <QuestionCard 
+            question={{ id: 'obj_review', type: 'text', text: 'Bilan : ces objectifs ont-ils été atteints ? Commentaires sur la progression.', required: false }} 
+            value={answers['obj_review']} 
+            onChange={val => setAnswers({ ...answers, obj_review: val })} 
+          />
+        </div>
+      );
+    }
+
+    if (currentStep?.section === 'role_select') {
+      return (
+        <div className="space-y-4">
+          <p className="text-sm text-gray-400 mb-4">Sélectionne le poste de {staffName} pour adapter l'évaluation des compétences.</p>
+          
+          <button onClick={() => setStaffRole('coach')}
+            className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
+              staffRole === 'coach' ? 'bg-red-900/30 border-red-600' : 'bg-neutral-900 border-neutral-800 hover:border-red-600'
+            }`}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-red-900/50 rounded-xl border border-red-800">
+                <User className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Coach</h3>
+                <p className="text-sm text-gray-400">Coaching terrain, suivi adhérents, programmes</p>
+              </div>
+            </div>
+          </button>
+
+          <button onClick={() => setStaffRole('commercial')}
+            className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
+              staffRole === 'commercial' ? 'bg-red-900/30 border-red-600' : 'bg-neutral-900 border-neutral-800 hover:border-red-600'
+            }`}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-red-900/50 rounded-xl border border-red-800">
+                <Star className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Commercial</h3>
+                <p className="text-sm text-gray-400">Prospection, vente, accueil prospects, fidélisation</p>
+              </div>
+            </div>
+          </button>
+
+          <button onClick={() => setStaffRole('manager')}
+            className={`w-full p-5 rounded-xl border-2 transition-all text-left ${
+              staffRole === 'manager' ? 'bg-red-900/30 border-red-600' : 'bg-neutral-900 border-neutral-800 hover:border-red-600'
+            }`}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-red-900/50 rounded-xl border border-red-800">
+                <UserCog className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Manager</h3>
+                <p className="text-sm text-gray-400">Gestion d'équipe, pilotage, organisation</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      );
+    }
+
+    if (currentStep?.section === 'competences') {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-400">
+              Double notation collaborateur + manager (1 = Non acquis, 5 = Expert)
+            </p>
+            <span className="px-2 py-1 bg-red-900/50 text-red-400 text-xs rounded-full border border-red-800">
+              {staffRole === 'coach' ? '🏋️ Coach' : staffRole === 'commercial' ? '💼 Commercial' : '👔 Manager'}
+            </span>
+          </div>
+          {currentCompetenceCategories.map(cat => (
+            <div key={cat.name} className="space-y-3">
+              <h3 className="text-red-500 font-semibold text-sm uppercase tracking-wide border-b border-neutral-800 pb-2">{cat.name}</h3>
+              {cat.competences.map(comp => (
+                <div key={comp.id} className="bg-neutral-900 rounded-xl border border-neutral-800 p-4">
+                  <div className="mb-3">
+                    <p className="font-medium text-gray-200 text-sm">{comp.label}</p>
+                    <p className="text-xs text-gray-500">{comp.desc}</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400">{staffName}</span>
+                      <Rating5 value={competencesSelf[comp.id]} onChange={val => setCompetencesSelf({ ...competencesSelf, [comp.id]: val })} compact />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-red-500">{managerName}</span>
+                      <Rating5 value={competencesManager[comp.id]} onChange={val => setCompetencesManager({ ...competencesManager, [comp.id]: val })} compact />
+                    </div>
+                    <div className="pt-2 border-t border-neutral-800">
+                      <input
+                        type="text"
+                        value={competencesComments[comp.id] || ''}
+                        onChange={e => setCompetencesComments({ ...competencesComments, [comp.id]: e.target.value })}
+                        placeholder="Commentaire manager (optionnel)"
+                        className="w-full p-2 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-300 text-xs placeholder-gray-600 focus:border-red-500 outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    if (currentStep?.section === 'objectives') {
+      return (
+        <div className="space-y-4">
+          <div className="bg-red-900/30 rounded-xl p-4 border border-red-900 mb-4">
+            <div className="flex items-start gap-3">
+              <Target className="w-5 h-5 text-red-500 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-white mb-1">Définition des objectifs pour {staffName}</h3>
+                <p className="text-sm text-gray-400">
+                  Ces objectifs seront revus lors du prochain entretien pour faire le bilan de la progression.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">1</span>
+              <span className="text-white font-medium">Court terme</span>
+              <span className="text-gray-500 text-sm">(ce mois)</span>
+            </div>
+            <textarea
+              value={answers['obj1'] || ''}
+              onChange={e => setAnswers({ ...answers, obj1: e.target.value })}
+              placeholder="Quels objectifs pour ce mois-ci ?"
+              rows={2}
+              className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-200 placeholder-gray-500 focus:border-red-500 outline-none resize-none"
+            />
+          </div>
+          
+          <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">2</span>
+              <span className="text-white font-medium">Moyen terme</span>
+              <span className="text-gray-500 text-sm">(6 mois)</span>
+            </div>
+            <textarea
+              value={answers['obj2'] || ''}
+              onChange={e => setAnswers({ ...answers, obj2: e.target.value })}
+              placeholder="Quels objectifs pour les 6 prochains mois ?"
+              rows={2}
+              className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-200 placeholder-gray-500 focus:border-red-500 outline-none resize-none"
+            />
+          </div>
+          
+          <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center text-white text-xs font-bold">3</span>
+              <span className="text-white font-medium">Long terme</span>
+              <span className="text-gray-500 text-sm">(24 mois et +)</span>
+            </div>
+            <textarea
+              value={answers['obj3'] || ''}
+              onChange={e => setAnswers({ ...answers, obj3: e.target.value })}
+              placeholder="Quels objectifs à long terme ? Vision de carrière ?"
+              rows={2}
+              className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg text-gray-200 placeholder-gray-500 focus:border-red-500 outline-none resize-none"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        {currentStep?.questions.map(q => (
+          <QuestionCard 
+            key={q.id} 
+            question={q} 
+            value={answers[q.id]} 
+            onChange={val => setAnswers({ ...answers, [q.id]: val })}
+            comment={comments[q.id]}
+            onCommentChange={val => setComments({ ...comments, [q.id]: val })}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-black pb-24">
+      <header className="sticky top-0 z-10 bg-black/95 border-b border-neutral-800 p-4">
+        <div className="max-w-lg mx-auto">
+          <div className="text-sm text-gray-400 mb-2">{currentStep?.theme} • {step}/{totalSteps}</div>
+          <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+            <div className="h-full bg-red-600 rounded-full transition-all" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+      </header>
+      <main className="max-w-lg mx-auto p-4">{renderContent()}</main>
+      <footer className="fixed bottom-0 left-0 right-0 bg-black/95 border-t border-neutral-800 p-4">
+        <div className="max-w-lg mx-auto flex gap-3">
+          <button onClick={() => step === 1 ? setStep(0) : setStep(step - 1)} className="px-5 py-3 border border-neutral-700 text-gray-300 rounded-xl hover:bg-neutral-800">Précédent</button>
+          <button onClick={() => step === totalSteps ? handleSubmit() : setStep(step + 1)} disabled={!validateStep()}
+            className="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2">
+            {step === totalSteps ? <>Terminer <Check className="w-4 h-4" /></> : <>Suivant <ChevronRight className="w-4 h-4" /></>}
+          </button>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+// Page de fin entretien avec export et historique
+const StaffCompletePage = ({ onBack, lastResponse, allResponses, staffName, competenceCategories }) => {
+  const [showExport, setShowExport] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const staffHistory = useMemo(() => 
+    allResponses.filter(r => r.type === 'staff' && r.name === staffName).sort((a, b) => 
+      new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-'))
+    )
+  , [allResponses, staffName]);
+
+  const exportData = () => {
+    if (!lastResponse) return '';
+    const roleLabel = lastResponse.role === 'coach' ? 'Coach' : lastResponse.role === 'commercial' ? 'Commercial' : 'Manager';
+    
+    let text = `═══════════════════════════════════════════════════════════════\n`;
+    text += `                    ENTRETIEN INDIVIDUEL - NATIF BODY\n`;
+    text += `═══════════════════════════════════════════════════════════════\n\n`;
+    text += `Collaborateur : ${lastResponse.name}\n`;
+    text += `Poste : ${roleLabel}\n`;
+    text += `Manager : ${lastResponse.manager}\n`;
+    text += `Date : ${lastResponse.date}\n\n`;
+    
+    text += `───────────────────────────────────────────────────────────────\n`;
+    text += `                         OBJECTIFS\n`;
+    text += `───────────────────────────────────────────────────────────────\n\n`;
+    if (lastResponse.answers?.obj1) text += `Court terme (ce mois) : ${lastResponse.answers.obj1}\n`;
+    if (lastResponse.answers?.obj2) text += `Moyen terme (6 mois) : ${lastResponse.answers.obj2}\n`;
+    if (lastResponse.answers?.obj3) text += `Long terme (24 mois+) : ${lastResponse.answers.obj3}\n`;
+    text += `\n`;
+
+    text += `───────────────────────────────────────────────────────────────\n`;
+    text += `                    ÉVALUATION DES COMPÉTENCES\n`;
+    text += `───────────────────────────────────────────────────────────────\n\n`;
+    
+    competenceCategories.forEach(cat => {
+      text += `▸ ${cat.name.toUpperCase()}\n`;
+      cat.competences.forEach(comp => {
+        const selfScore = lastResponse.competencesSelf?.[comp.id] || '-';
+        const managerScore = lastResponse.competencesManager?.[comp.id] || '-';
+        const comment = lastResponse.competencesComments?.[comp.id];
+        text += `  ${comp.label}: Collab ${selfScore}/5 | Manager ${managerScore}/5`;
+        if (comment) text += ` → ${comment}`;
+        text += `\n`;
+      });
+      text += `\n`;
+    });
+
+    text += `───────────────────────────────────────────────────────────────\n`;
+    text += `                         QUESTIONS RH\n`;
+    text += `───────────────────────────────────────────────────────────────\n\n`;
+    if (lastResponse.answers?.rh1) text += `Bien-être au travail : ${lastResponse.answers.rh1}/5\n`;
+    if (lastResponse.answers?.rh2) text += `Commentaire bien-être : ${lastResponse.answers.rh2}\n`;
+    if (lastResponse.answers?.rh3) text += `Charge de travail : ${lastResponse.answers.rh3}\n`;
+    if (lastResponse.answers?.rh4) text += `Clarté des priorités : ${lastResponse.answers.rh4}/10\n`;
+    if (lastResponse.answers?.rh5) text += `Communication interne : ${lastResponse.answers.rh5}/10\n`;
+    if (lastResponse.answers?.rh6) text += `Besoins matériel : ${lastResponse.answers.rh6}\n`;
+    if (lastResponse.answers?.rh7) text += `Retours adhérents : ${lastResponse.answers.rh7}\n`;
+    if (lastResponse.answers?.rh8) text += `Besoins formation : ${lastResponse.answers.rh8}\n`;
+    if (lastResponse.answers?.rh9) text += `Souhaits évolution : ${lastResponse.answers.rh9}\n`;
+    if (lastResponse.answers?.rh10) text += `Idée DG : ${lastResponse.answers.rh10}\n`;
+    
+    text += `\n═══════════════════════════════════════════════════════════════\n`;
+    
+    return text;
+  };
+
+  const handleExport = () => {
+    const text = exportData();
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `entretien_${staffName.replace(/\s+/g, '_')}_${lastResponse?.date?.replace(/\//g, '-')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const copyToClipboard = () => {
+    const text = exportData();
+    navigator.clipboard.writeText(text);
+  };
+
+  const getAvgCompetence = (response) => {
+    if (!response?.competencesSelf) return '-';
+    const vals = Object.values(response.competencesSelf).filter(v => v);
+    return vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '-';
+  };
+
+  if (showExport) {
+    return (
+      <div className="min-h-screen bg-black">
+        <header className="bg-neutral-900 border-b border-neutral-800 p-4">
+          <div className="max-w-4xl mx-auto flex items-center gap-4">
+            <button onClick={() => setShowExport(false)} className="p-2 hover:bg-neutral-800 rounded-lg text-gray-400"><ChevronLeft className="w-5 h-5" /></button>
+            <h1 className="font-bold text-white">Export de l'entretien</h1>
+          </div>
+        </header>
+        <main className="max-w-4xl mx-auto p-4">
+          <div className="flex gap-3 mb-4">
+            <button onClick={handleExport} className="flex-1 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 flex items-center justify-center gap-2">
+              <FileText className="w-4 h-4" /> Télécharger .txt
+            </button>
+            <button onClick={copyToClipboard} className="flex-1 py-3 bg-neutral-800 text-white font-medium rounded-xl hover:bg-neutral-700 flex items-center justify-center gap-2 border border-neutral-700">
+              <ClipboardList className="w-4 h-4" /> Copier
+            </button>
+          </div>
+          <pre className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 text-xs text-gray-300 overflow-x-auto whitespace-pre-wrap font-mono">
+            {exportData()}
+          </pre>
+        </main>
+      </div>
+    );
+  }
+
+  if (showHistory) {
+    return (
+      <div className="min-h-screen bg-black">
+        <header className="bg-neutral-900 border-b border-neutral-800 p-4">
+          <div className="max-w-4xl mx-auto flex items-center gap-4">
+            <button onClick={() => setShowHistory(false)} className="p-2 hover:bg-neutral-800 rounded-lg text-gray-400"><ChevronLeft className="w-5 h-5" /></button>
+            <h1 className="font-bold text-white">Historique de {staffName}</h1>
+          </div>
+        </header>
+        <main className="max-w-4xl mx-auto p-4 space-y-4">
+          {staffHistory.length === 0 ? <p className="text-gray-500 text-center py-8">Aucun entretien précédent</p> : (
+            <>
+              <div className="bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-neutral-800"><tr><th className="text-left p-3 text-gray-400">Date</th><th className="text-center p-3 text-gray-400">NPS</th><th className="text-center p-3 text-gray-400">Bien-être</th><th className="text-center p-3 text-gray-400">Moy.</th><th className="text-left p-3 text-gray-400">Objectif</th></tr></thead>
+                  <tbody>
+                    {staffHistory.map((r, i) => (
+                      <tr key={r.id} className={i % 2 === 0 ? 'bg-neutral-900' : 'bg-neutral-800/50'}>
+                        <td className="p-3 text-white">{r.date}</td>
+                        <td className="p-3 text-center"><span className={`px-2 py-1 rounded text-xs font-medium ${r.nps >= 9 ? 'bg-emerald-900/50 text-emerald-400' : r.nps >= 7 ? 'bg-amber-900/50 text-amber-400' : 'bg-red-900/50 text-red-400'}`}>{r.nps || '-'}</span></td>
+                        <td className="p-3 text-center text-gray-300">{r.answers?.rh1 || '-'}/5</td>
+                        <td className="p-3 text-center text-gray-300">{getAvgCompetence(r)}</td>
+                        <td className="p-3 text-gray-400 text-xs truncate max-w-[150px]">{r.answers?.obj1 || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-4">
+                <h3 className="text-white font-medium mb-4 flex items-center gap-2"><TrendingUp className="w-5 h-5 text-red-500" /> Évolution NPS</h3>
+                <div className="flex items-end gap-2 h-32">
+                  {staffHistory.slice().reverse().map(r => (
+                    <div key={r.id} className="flex-1 flex flex-col items-center gap-1">
+                      <div className={`w-full rounded-t ${r.nps >= 9 ? 'bg-emerald-500' : r.nps >= 7 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ height: `${((r.nps || 0) / 10) * 100}%`, minHeight: '4px' }} />
+                      <span className="text-xs text-gray-500">{r.date.substring(3, 10)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-4">
+                <h3 className="text-white font-medium mb-4 flex items-center gap-2"><Target className="w-5 h-5 text-red-500" /> Objectifs</h3>
+                <div className="space-y-3">
+                  {staffHistory.map(r => (
+                    <div key={r.id} className="p-3 bg-neutral-800 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2"><Calendar className="w-4 h-4 text-gray-500" /><span className="text-white text-sm font-medium">{r.date}</span></div>
+                      <div className="space-y-1 text-xs">
+                        {r.answers?.obj1 && <p className="text-gray-300"><span className="text-red-400">Court:</span> {r.answers.obj1}</p>}
+                        {r.answers?.obj2 && <p className="text-gray-300"><span className="text-red-400">Moyen:</span> {r.answers.obj2}</p>}
+                        {r.answers?.obj3 && <p className="text-gray-300"><span className="text-red-400">Long:</span> {r.answers.obj3}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
+      <div className="w-20 h-20 bg-emerald-900/50 rounded-full flex items-center justify-center mb-6 border border-emerald-700"><Check className="w-10 h-10 text-emerald-500" /></div>
+      <h1 className="text-2xl font-bold text-white mb-2">Entretien terminé !</h1>
+      <p className="text-gray-400 text-center mb-8">Les données de {staffName} sont enregistrées.</p>
+      <div className="w-full max-w-sm space-y-3">
+        <button onClick={() => setShowExport(true)} className="w-full py-4 bg-neutral-900 text-white font-medium rounded-xl hover:bg-neutral-800 border border-neutral-700 flex items-center justify-center gap-3"><FileText className="w-5 h-5 text-red-500" /><span>Exporter l'entretien</span></button>
+        <button onClick={() => setShowHistory(true)} className="w-full py-4 bg-neutral-900 text-white font-medium rounded-xl hover:bg-neutral-800 border border-neutral-700 flex items-center justify-center gap-3"><History className="w-5 h-5 text-red-500" /><span>Voir l'historique</span></button>
+        <button onClick={onBack} className="w-full py-4 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 flex items-center justify-center gap-2"><Home className="w-5 h-5" /> Retour à l'accueil</button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// DASHBOARD ADMIN
+// ============================================
+
+const AdminPage = ({ onBack, responses, onViewStaff, setResponses }) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const [importSuccess, setImportSuccess] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const stats = useMemo(() => {
+    const staff = responses.filter(r => r.type === 'staff');
+    const uniqueStaff = [...new Set(staff.map(r => r.name))].length;
+    return { total: staff.length, uniqueStaff };
+  }, [responses]);
+
+  // Liste collaborateurs uniques
+  const staffList = useMemo(() => {
+    const names = [...new Set(responses.filter(r => r.type === 'staff').map(r => r.name))];
+    return names.map(name => {
+      const staffResponses = responses.filter(r => r.type === 'staff' && r.name === name);
+      const latest = staffResponses[staffResponses.length - 1];
+      return { name, count: staffResponses.length, lastDate: latest?.date, role: latest?.role };
+    });
+  }, [responses]);
+
+  // Export global JSON
+  const handleExportAll = () => {
+    const dataStr = JSON.stringify(responses, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `natif-entretiens-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Import JSON
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const imported = JSON.parse(event.target.result);
+        if (Array.isArray(imported)) {
+          setResponses(imported);
+          setImportSuccess(true);
+          setTimeout(() => setImportSuccess(false), 3000);
+        } else {
+          alert('Format de fichier invalide');
+        }
+      } catch (err) {
+        alert('Erreur lors de la lecture du fichier');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  // Supprimer un collaborateur (tous ses entretiens)
+  const handleDeleteStaff = (staffName) => {
+    const filtered = responses.filter(r => !(r.type === 'staff' && r.name === staffName));
+    setResponses(filtered);
+    setShowDeleteConfirm(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      <header className="bg-neutral-900 border-b border-neutral-800 p-4">
+        <div className="max-w-4xl mx-auto flex items-center gap-4">
+          <button onClick={onBack} className="p-2 hover:bg-neutral-800 rounded-lg text-gray-400"><ChevronLeft className="w-5 h-5" /></button>
+          <Logo size="sm" />
+          <div>
+            <h1 className="font-bold text-white">Tableau de bord</h1>
+            <p className="text-xs text-gray-500">Entretiens Individuels</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto p-4 space-y-6">
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 text-center">
+            <div className="text-2xl font-bold text-white">{stats.uniqueStaff}</div>
+            <div className="text-xs text-gray-500">Collaborateurs</div>
+          </div>
+          <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 text-center">
+            <div className="text-2xl font-bold text-white">{stats.total}</div>
+            <div className="text-xs text-gray-500">Entretiens réalisés</div>
+          </div>
+        </div>
+
+        {/* Import/Export */}
+        <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-4">
+          <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-red-500" /> Sauvegarde des données
+          </h2>
+          <p className="text-sm text-gray-400 mb-4">
+            Exportez vos données avant une mise à jour, puis réimportez-les ensuite.
+          </p>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleExportAll}
+              className="flex-1 py-3 bg-neutral-800 text-white rounded-xl hover:bg-neutral-700 flex items-center justify-center gap-2 border border-neutral-700"
+            >
+              <Download className="w-4 h-4 text-emerald-500" /> Exporter tout
+            </button>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 py-3 bg-neutral-800 text-white rounded-xl hover:bg-neutral-700 flex items-center justify-center gap-2 border border-neutral-700"
+            >
+              <Upload className="w-4 h-4 text-blue-500" /> Importer
+            </button>
+            <input 
+              ref={fileInputRef}
+              type="file" 
+              accept=".json" 
+              onChange={handleImport} 
+              className="hidden" 
+            />
+          </div>
+          {importSuccess && (
+            <div className="mt-3 p-3 bg-emerald-900/30 border border-emerald-800 rounded-lg text-emerald-400 text-sm text-center">
+              ✓ Données importées avec succès !
+            </div>
+          )}
+        </div>
+
+        {/* Collaborateurs - fiches individuelles */}
+        <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-4">
+          <h2 className="font-semibold text-white mb-4 flex items-center gap-2"><UserCog className="w-5 h-5 text-red-500" /> Équipe</h2>
+          {staffList.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">Aucun entretien enregistré</p>
+          ) : (
+            <div className="space-y-2">
+              {staffList.map(s => (
+                <div key={s.name} className="flex items-center gap-2">
+                  <button 
+                    onClick={() => onViewStaff(s.name)}
+                    className="flex-1 p-4 bg-neutral-800 rounded-xl flex items-center justify-between hover:bg-neutral-700 transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-red-900/50 rounded-full flex items-center justify-center border border-red-800">
+                        <span className="text-red-400 font-medium">{s.name.charAt(0)}</span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="text-white font-medium">{s.name}</p>
+                          {s.role && (
+                            <span className="px-1.5 py-0.5 bg-neutral-700 text-gray-400 text-xs rounded">
+                              {s.role === 'coach' ? '🏋️ Coach' : s.role === 'commercial' ? '💼 Commercial' : '👔 Manager'}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500">{s.count} entretien(s) • Dernier: {s.lastDate}</p>
+                      </div>
+                    </div>
+                    <Eye className="w-5 h-5 text-gray-500" />
+                  </button>
+                  
+                  {/* Bouton suppression avec cadenas */}
+                  <button 
+                    onClick={() => setShowDeleteConfirm(s.name)}
+                    className="p-3 bg-neutral-800 rounded-xl hover:bg-red-900/50 transition-colors border border-neutral-700 hover:border-red-800 group"
+                    title="Supprimer"
+                  >
+                    <Lock className="w-5 h-5 text-gray-500 group-hover:text-red-500" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Modal confirmation suppression */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-6 z-50">
+          <div className="bg-neutral-900 rounded-2xl p-6 w-full max-w-sm border border-neutral-800">
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-800">
+                <Trash2 className="w-7 h-7 text-red-500" />
+              </div>
+              <h2 className="text-xl font-bold text-white">Supprimer {showDeleteConfirm} ?</h2>
+              <p className="text-sm text-gray-400 mt-2">
+                Tous les entretiens de ce collaborateur seront supprimés définitivement.
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowDeleteConfirm(null)}
+                className="flex-1 py-3 border border-neutral-700 text-gray-300 rounded-xl font-medium hover:bg-neutral-800"
+              >
+                Annuler
+              </button>
+              <button 
+                onClick={() => handleDeleteStaff(showDeleteConfirm)}
+                className="flex-1 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================
+// STAFF PROFILE
+// ============================================
+
+const StaffProfile = ({ staffName, responses, onBack }) => {
+  const staffResponses = useMemo(() => 
+    responses.filter(r => r.type === 'staff' && r.name === staffName)
+      .sort((a, b) => new Date(b.date.split('/').reverse().join('-')) - new Date(a.date.split('/').reverse().join('-')))
+  , [responses, staffName]);
+
+  const latestResponse = staffResponses[0];
+  const role = latestResponse?.role;
+  const competenceCategories = role ? getCompetencesForRole(role) : [];
+
+  const getAvgCompetence = (response) => {
+    if (!response?.competencesSelf) return null;
+    const vals = Object.values(response.competencesSelf).filter(v => v);
+    return vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : null;
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      <header className="bg-neutral-900 border-b border-neutral-800 p-4">
+        <div className="max-w-4xl mx-auto flex items-center gap-4">
+          <button onClick={onBack} className="p-2 hover:bg-neutral-800 rounded-lg text-gray-400"><ChevronLeft className="w-5 h-5" /></button>
+          <div>
+            <h1 className="font-bold text-white flex items-center gap-2">
+              {staffName}
+              {role && <span className="text-sm">{role === 'coach' ? '🏋️' : role === 'commercial' ? '💼' : '👔'}</span>}
+            </h1>
+            <p className="text-xs text-gray-500">{staffResponses.length} entretien(s)</p>
+          </div>
+        </div>
+      </header>
+      <main className="max-w-4xl mx-auto p-4 space-y-4">
+        {staffResponses.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">Aucun entretien enregistré</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 text-center">
+                <p className="text-2xl font-bold text-white">{getAvgCompetence(latestResponse) || '-'}</p>
+                <p className="text-xs text-gray-500">Moy. compétences</p>
+              </div>
+              <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 text-center">
+                <p className={`text-2xl font-bold ${latestResponse?.nps >= 9 ? 'text-emerald-400' : latestResponse?.nps >= 7 ? 'text-amber-400' : 'text-red-400'}`}>{latestResponse?.nps || '-'}</p>
+                <p className="text-xs text-gray-500">Dernier NPS</p>
+              </div>
+              <div className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 text-center">
+                <p className="text-2xl font-bold text-white">{latestResponse?.answers?.rh1 || '-'}</p>
+                <p className="text-xs text-gray-500">Bien-être</p>
+              </div>
+            </div>
+
+            <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-4">
+              <h3 className="text-white font-medium mb-3 flex items-center gap-2"><Target className="w-5 h-5 text-red-500" /> Objectifs en cours</h3>
+              <div className="space-y-2 text-sm">
+                {latestResponse?.answers?.obj1 && <p className="text-gray-300"><span className="text-red-400 font-medium">Court:</span> {latestResponse.answers.obj1}</p>}
+                {latestResponse?.answers?.obj2 && <p className="text-gray-300"><span className="text-red-400 font-medium">Moyen:</span> {latestResponse.answers.obj2}</p>}
+                {latestResponse?.answers?.obj3 && <p className="text-gray-300"><span className="text-red-400 font-medium">Long:</span> {latestResponse.answers.obj3}</p>}
+              </div>
+            </div>
+
+            <div className="bg-neutral-900 rounded-xl border border-neutral-800 overflow-hidden">
+              <div className="p-4 border-b border-neutral-800">
+                <h3 className="text-white font-medium">Historique des entretiens</h3>
+              </div>
+              <table className="w-full text-sm">
+                <thead className="bg-neutral-800">
+                  <tr>
+                    <th className="text-left p-3 text-gray-400">Date</th>
+                    <th className="text-center p-3 text-gray-400">NPS</th>
+                    <th className="text-center p-3 text-gray-400">Bien-être</th>
+                    <th className="text-center p-3 text-gray-400">Moy.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {staffResponses.map((r, i) => (
+                    <tr key={r.id} className={i % 2 === 0 ? 'bg-neutral-900' : 'bg-neutral-800/50'}>
+                      <td className="p-3 text-white">{r.date}</td>
+                      <td className="p-3 text-center">
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${r.nps >= 9 ? 'bg-emerald-900/50 text-emerald-400' : r.nps >= 7 ? 'bg-amber-900/50 text-amber-400' : 'bg-red-900/50 text-red-400'}`}>{r.nps || '-'}</span>
+                      </td>
+                      <td className="p-3 text-center text-gray-300">{r.answers?.rh1 || '-'}/5</td>
+                      <td className="p-3 text-center text-gray-300">{getAvgCompetence(r) || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </main>
+    </div>
+  );
+};
+
+// ============================================
+// MAIN APP
+// ============================================
+
+const App = function NatifEntretiens() {
+  const [page, setPage] = useState('home');
+  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [lastStaffResponse, setLastStaffResponse] = useState(null);
+  const [lastStaffName, setLastStaffName] = useState('');
+  const [lastStaffRole, setLastStaffRole] = useState(null);
+  const [responses, setResponses] = useState(() => generateDemoData());
+
+  const handleSelect = (type) => {
+    if (type === 'admin') setPage('admin');
+    else if (type === 'staff') setPage('survey');
+  };
+
+  const handleComplete = (staffResponse, staffName, staffRole) => {
+    setLastStaffResponse(staffResponse);
+    setLastStaffName(staffName);
+    setLastStaffRole(staffRole);
+    setPage('staffComplete');
+  };
+  
+  const handleBack = () => { 
+    setPage('home'); 
+    setSelectedStaff(null); 
+    setLastStaffResponse(null);
+    setLastStaffName('');
+    setLastStaffRole(null);
+  };
+  
+  const handleViewStaff = (name) => { setSelectedStaff(name); setPage('staffProfile'); };
+
+  // Get competence categories for last staff
+  const lastStaffCompetenceCategories = lastStaffRole ? getCompetencesForRole(lastStaffRole) : [];
+
+  switch (page) {
+    case 'survey':
+      return <StaffSurvey onBack={handleBack} onComplete={handleComplete} responses={responses} setResponses={setResponses} history={responses} />;
+    case 'staffComplete':
+      return <StaffCompletePage 
+        onBack={handleBack} 
+        lastResponse={lastStaffResponse} 
+        allResponses={responses} 
+        staffName={lastStaffName}
+        competenceCategories={lastStaffCompetenceCategories}
+      />;
+    case 'admin':
+      return <AdminPage onBack={handleBack} responses={responses} onViewStaff={handleViewStaff} setResponses={setResponses} />;
+    case 'staffProfile':
+      return <StaffProfile staffName={selectedStaff} responses={responses} onBack={() => setPage('admin')} />;
+    default:
+      return <HomePage onSelect={handleSelect} />;
+  }
+}
+
+// Render
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+  </script>
+</body>
+</html>

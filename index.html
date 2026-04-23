@@ -252,55 +252,7 @@ const allCompetenceIds = [
 ];
 
 // ============================================
-// DEMO DATA
-// ============================================
 
-const generateDemoData = () => {
-  const staffData = [
-    { name: 'Marie Dupont', role: 'coach' },
-    { name: 'Lucas Martin', role: 'commercial' },
-    { name: 'Sophie Bernard', role: 'manager' }
-  ];
-  const months = ['01/11/2024', '01/12/2024', '01/01/2025'];
-  
-  const responses = [];
-  
-  // Staff responses
-  staffData.forEach(({ name, role }, ni) => {
-    const roleCompetences = getCompetencesForRole(role);
-    const compIds = roleCompetences.flatMap(cat => cat.competences.map(c => c.id));
-    
-    months.forEach((date, mi) => {
-      const compSelf = {};
-      const compManager = {};
-      const compComments = {};
-      compIds.forEach(id => {
-        compSelf[id] = Math.min(5, Math.max(1, 2 + mi + Math.floor(Math.random() * 2)));
-        compManager[id] = Math.min(5, Math.max(1, 2 + mi + Math.floor(Math.random() * 2)));
-        if (Math.random() > 0.7) compComments[id] = 'Bonne progression';
-      });
-      responses.push({
-        id: Date.now() + ni * 100 + mi,
-        type: 'staff',
-        name,
-        role,
-        manager: 'Thomas',
-        date,
-        answers: {
-          obj1: `Objectif court terme ${mi + 1}`,
-          obj2: `Objectif moyen terme ${mi + 1}`,
-          obj3: `Objectif long terme`,
-          rh1: 3 + Math.floor(Math.random() * 2),
-        },
-        competencesSelf: compSelf,
-        competencesManager: compManager,
-        competencesComments: compComments,
-      });
-    });
-  });
-
-  return responses;
-};
 
 // ============================================
 // COMPONENTS
@@ -1200,10 +1152,84 @@ const StaffCompletePage = ({ onBack, lastResponse, allResponses, staffName, comp
 // DASHBOARD ADMIN
 // ============================================
 
+const parseTxtInterview = (text) => {
+  const result = {
+    type: 'staff',
+    id: Date.now() + Math.random(),
+    answers: {},
+    competencesSelf: {},
+    competencesManager: {},
+    competencesComments: {},
+  };
+
+  let section = null;
+
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trimEnd();
+    const t = line.trim();
+    let m;
+
+    if ((m = t.match(/^Collaborateur\s*:\s*(.+)$/))) { result.name = m[1].trim(); continue; }
+    if ((m = t.match(/^Poste\s*:\s*(.+)$/))) {
+      const lbl = m[1].trim();
+      result.role = lbl === 'Coach' ? 'coach' : lbl === 'Commercial' ? 'commercial' : 'manager';
+      continue;
+    }
+    if ((m = t.match(/^Manager\s*:\s*(.+)$/))) { result.manager = m[1].trim(); continue; }
+    if ((m = t.match(/^Date\s*:\s*(.+)$/))) { result.date = m[1].trim(); continue; }
+
+    if (t.includes('OBJECTIFS')) { section = 'objectifs'; continue; }
+    if (t.includes('ÉVALUATION DES COMPÉTENCES')) { section = 'competences'; continue; }
+    if (t.includes('QUESTIONS RH')) { section = 'rh'; continue; }
+
+    if (section === 'objectifs') {
+      if ((m = t.match(/^Court terme.*?:\s*(.+)$/))) result.answers.obj1 = m[1].trim();
+      if ((m = t.match(/^Moyen terme.*?:\s*(.+)$/))) result.answers.obj2 = m[1].trim();
+      if ((m = t.match(/^Long terme.*?:\s*(.+)$/))) result.answers.obj3 = m[1].trim();
+    }
+
+    if (section === 'competences' && result.role) {
+      if ((m = line.match(/^  (.+?):\s*Collab\s*(\d+)\/5\s*\|\s*Manager\s*(\d+)\/5(?:\s*→\s*(.+))?$/))) {
+        const label = m[1].trim();
+        const selfScore = parseInt(m[2]);
+        const managerScore = parseInt(m[3]);
+        const comment = m[4]?.trim();
+        for (const cat of getCompetencesForRole(result.role)) {
+          for (const comp of cat.competences) {
+            if (comp.label === label) {
+              result.competencesSelf[comp.id] = selfScore;
+              result.competencesManager[comp.id] = managerScore;
+              if (comment) result.competencesComments[comp.id] = comment;
+            }
+          }
+        }
+      }
+    }
+
+    if (section === 'rh') {
+      if ((m = t.match(/^Bien-être au travail\s*:\s*(\d+)\/5$/))) result.answers.rh1 = parseInt(m[1]);
+      if ((m = t.match(/^Commentaire bien-être\s*:\s*(.+)$/))) result.answers.rh2 = m[1].trim();
+      if ((m = t.match(/^Charge de travail\s*:\s*(.+)$/))) result.answers.rh3 = m[1].trim();
+      if ((m = t.match(/^Clarté des priorités\s*:\s*(\d+)\/10$/))) result.answers.rh4 = parseInt(m[1]);
+      if ((m = t.match(/^Communication interne\s*:\s*(\d+)\/10$/))) result.answers.rh5 = parseInt(m[1]);
+      if ((m = t.match(/^Besoins matériel\s*:\s*(.+)$/))) result.answers.rh6 = m[1].trim();
+      if ((m = t.match(/^Retours adhérents\s*:\s*(.+)$/))) result.answers.rh7 = m[1].trim();
+      if ((m = t.match(/^Besoins formation\s*:\s*(.+)$/))) result.answers.rh8 = m[1].trim();
+      if ((m = t.match(/^Souhaits évolution\s*:\s*(.+)$/))) result.answers.rh9 = m[1].trim();
+      if ((m = t.match(/^Idée DG\s*:\s*(.+)$/))) result.answers.rh10 = m[1].trim();
+    }
+  }
+
+  if (!result.name || !result.role || !result.date) return null;
+  return result;
+};
+
 const AdminPage = ({ onBack, responses, onViewStaff, setResponses }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [importSuccess, setImportSuccess] = useState(false);
+  const [importTxtSuccess, setImportTxtSuccess] = useState('');
   const fileInputRef = useRef(null);
+  const txtFileInputRef = useRef(null);
 
   const stats = useMemo(() => {
     const staff = responses.filter(r => r.type === 'staff');
@@ -1254,6 +1280,30 @@ const AdminPage = ({ onBack, responses, onViewStaff, setResponses }) => {
       } catch (err) {
         alert('Erreur lors de la lecture du fichier');
       }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleImportTxt = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const parsed = parseTxtInterview(event.target.result);
+      if (!parsed) {
+        alert('Fichier invalide : collaborateur, poste ou date manquant.');
+        return;
+      }
+      setResponses(prev => {
+        const exists = prev.some(r => r.type === 'staff' && r.name === parsed.name && r.date === parsed.date);
+        if (exists) {
+          return prev.map(r => (r.type === 'staff' && r.name === parsed.name && r.date === parsed.date) ? { ...parsed, id: r.id } : r);
+        }
+        return [...prev, parsed];
+      });
+      setImportTxtSuccess(`Entretien de ${parsed.name} (${parsed.date}) importé.`);
+      setTimeout(() => setImportTxtSuccess(''), 4000);
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -1313,17 +1363,38 @@ const AdminPage = ({ onBack, responses, onViewStaff, setResponses }) => {
             >
               <Upload className="w-4 h-4 text-blue-500" /> Importer
             </button>
-            <input 
+            <input
               ref={fileInputRef}
-              type="file" 
-              accept=".json" 
-              onChange={handleImport} 
-              className="hidden" 
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="hidden"
             />
           </div>
           {importSuccess && (
             <div className="mt-3 p-3 bg-emerald-900/30 border border-emerald-800 rounded-lg text-emerald-400 text-sm text-center">
               ✓ Données importées avec succès !
+            </div>
+          )}
+          <div className="mt-3 border-t border-neutral-800 pt-3">
+            <p className="text-xs text-gray-500 mb-2">Importer un entretien depuis un fichier .txt exporté</p>
+            <button
+              onClick={() => txtFileInputRef.current?.click()}
+              className="w-full py-2.5 bg-neutral-800 text-white rounded-xl hover:bg-neutral-700 flex items-center justify-center gap-2 border border-neutral-700 text-sm"
+            >
+              <Upload className="w-4 h-4 text-amber-500" /> Importer un entretien (.txt)
+            </button>
+            <input
+              ref={txtFileInputRef}
+              type="file"
+              accept=".txt"
+              onChange={handleImportTxt}
+              className="hidden"
+            />
+          </div>
+          {importTxtSuccess && (
+            <div className="mt-3 p-3 bg-emerald-900/30 border border-emerald-800 rounded-lg text-emerald-400 text-sm text-center">
+              ✓ {importTxtSuccess}
             </div>
           )}
         </div>
@@ -1522,7 +1593,7 @@ const App = function NatifEntretiens() {
       const saved = localStorage.getItem('natif-entretiens-data');
       if (saved) return JSON.parse(saved);
     } catch(e) {}
-    return generateDemoData();
+    return [];
   });
 
   useEffect(() => {

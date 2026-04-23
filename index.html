@@ -13,7 +13,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-const { useState, useMemo, useRef } = React;
+const { useState, useMemo, useRef, useEffect } = React;
 
 // ICONS
 const ChevronRight = ({className}) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>;
@@ -1517,7 +1517,19 @@ const App = function NatifEntretiens() {
   const [lastStaffResponse, setLastStaffResponse] = useState(null);
   const [lastStaffName, setLastStaffName] = useState('');
   const [lastStaffRole, setLastStaffRole] = useState(null);
-  const [responses, setResponses] = useState(() => generateDemoData());
+  const [responses, setResponses] = useState(() => {
+    try {
+      const saved = localStorage.getItem('natif-entretiens-data');
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return generateDemoData();
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('natif-entretiens-data', JSON.stringify(responses));
+    } catch(e) {}
+  }, [responses]);
 
   const handleSelect = (type) => {
     if (type === 'admin') setPage('admin');
